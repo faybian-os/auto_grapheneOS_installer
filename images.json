@@ -7,17 +7,20 @@
             "grapheneos_version": "2025032100",
             "device_codename": "tangorpro",
             "device_model_name": "Pixel Tablet",
-            "device_brand": "Google"
+            "device_brand": "Google",
+            "active": true
         },
         {
             "filename": "imgs/akita-install-2025032100.zip",
             "grapheneos_version": "2025032100",
             "device_codename": "akita",
             "device_model_name": "Pixel 8a",
-            "device_brand": "Google"
+            "device_brand": "Google",
+            "active": true
         },
         {
-            "filename": "imgs/platform-tools_r35.0.2-linux.zip"
+            "filename": "imgs/platform-tools_r35.0.2-linux.zip",
+            "active": true
         }
     ]
 }

@@ -77,13 +77,13 @@ elif [[ -z "$DEVICE_CODENAME" && -z "$GRAPHENEOS_VERSION" ]]; then
     images_count=$(jq '.images | length' images.json)
     echo "Found $images_count images in images.json."
 
-    # Read images into arrays, skipping entries with null device_codename or version
+    # Read images into arrays, skipping entries with null device_codename or version, or inactive
     for ((i=0; i<images_count; i++)); do
         dc="$(jq -r ".images[$i].device_codename" images.json)"
         gv="$(jq -r ".images[$i].grapheneos_version" images.json)"
+        active="$(jq -r ".images[$i].active" images.json)"
 
-        # Skip if device_codename or grapheneos_version is "null"
-        if [[ "$dc" == "null" || "$gv" == "null" ]]; then
+        if [[ "$dc" == "null" || "$gv" == "null" || "$active" == "false" ]]; then
             continue
         fi
 

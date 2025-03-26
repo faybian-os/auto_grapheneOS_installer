@@ -137,9 +137,9 @@ if [[ -n "$DEVICE_CODENAME" && -n "$GRAPHENEOS_VERSION" ]]; then
       echo "images.json not found in the current directory. Exiting."
       exit 1
     fi
-    image_index=$(jq ".images | map(.device_codename == \"$DEVICE_CODENAME\" and .grapheneos_version == \"$GRAPHENEOS_VERSION\") | index(true)" images.json)
+    image_index=$(jq ".images | map(.device_codename == \"$DEVICE_CODENAME\" and .grapheneos_version == \"$GRAPHENEOS_VERSION\" and .active == true) | index(true)" images.json)
     if [[ "$image_index" == "null" ]]; then
-        echo "Error: Specified device_codename and grapheneos_version not found in images.json"
+        echo "Error: Specified device_codename and grapheneos_version not found or not active in images.json"
         exit 1
     fi
 
@@ -165,8 +165,9 @@ else
             db="$(jq -r ".images[$i].device_brand" images.json)"
             dm="$(jq -r ".images[$i].device_model_name" images.json)"
             gv="$(jq -r ".images[$i].grapheneos_version" images.json)"
+            active="$(jq -r ".images[$i].active" images.json)"
 
-            if [[ "$dc" == "null" || "$gv" == "null" ]]; then
+            if [[ "$dc" == "null" || "$gv" == "null" || "$active" == "false" ]]; then
                 continue
             fi
 
@@ -417,4 +418,3 @@ case $response in
         exit 1
         ;;
 esac
-
