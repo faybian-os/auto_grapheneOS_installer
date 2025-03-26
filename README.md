@@ -14,7 +14,7 @@ Full GrapheneOS CLI Install Documentation: https://grapheneos.org/install/cli
    ```
    
 2. Edit the `images.json` file to have your `device_codename` and `grapheneos_version` specified, in an entry with `"active": true`:
-   Please see documentation at https://grapheneos.org/releases to find this information.
+   Please see documentation at https://grapheneos.org/releases to find this information.  
    Note: Currently only one entry in `images.json` may have `"active": true` specified, otherwise you may have issues.
 
 3. Run the main install script:  
