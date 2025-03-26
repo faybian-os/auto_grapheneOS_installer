@@ -226,7 +226,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     grapheneos_version="${grapheneos_versions[$i]}"
 
     echo "Verifying if image exists and checksum is valid..."
-    verification_output=$(./verify_images_sha256sums.sh "$device_codename" "$grapheneos_version" 2>&1)
+    verification_output=$(./verify_images_sha256sums.sh -s "$device_codename" "$grapheneos_version" 2>&1)
     if echo "$verification_output" | grep -q "All image checksums and signatures verified successfully."; then
         echo "$verification_output"
         echo "Image for $device_codename $grapheneos_version is verified. Skipping download."
