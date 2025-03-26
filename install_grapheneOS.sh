@@ -225,7 +225,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     device_model_name="${device_model_names[$i]}"
     grapheneos_version="${grapheneos_versions[$i]}"
 
-    echo "Verifying if image exists and checksum is valid..."
+    echo "Verifying if image exists and checksum is valid for '$device_codename' '$grapheneos_version'..."
     verification_output=$(./verify_images_sha256sums.sh -s "$device_codename" "$grapheneos_version" 2>&1)
     if echo "$verification_output" | grep -q "All image checksums and signatures verified successfully."; then
         echo "$verification_output"
@@ -233,7 +233,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         continue
     else
         echo "$verification_output"
-        echo "Image missing or verification failed. Proceeding to download."
+        echo "Image missing or verification failed for '$device_codename' '$grapheneos_version'. Proceeding to download."
     fi
 
     echo ""
