@@ -1,9 +1,10 @@
 {
     "releases_url_root": "https://releases.grapheneos.org/",
+    "releases_documentation": "https://grapheneos.org/releases",
     "images": [
         {
-            "filename": "imgs/tangorpro-install-2025030200.zip",
-            "grapheneos_version": "2025030200",
+            "filename": "imgs/tangorpro-install-2025032100.zip",
+            "grapheneos_version": "2025032100",
             "device_codename": "tangorpro",
             "device_model_name": "Pixel Tablet",
             "device_brand": "Google"
