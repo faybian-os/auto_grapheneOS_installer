@@ -32,7 +32,7 @@ Full GrapheneOS CLI Install Documentation: https://grapheneos.org/install/cli
 6. General notes:  
    You may pass device and version arguments to scripts, for example:  
    `./install_grapheneOS.sh --device_codename tangorpro --grapheneos_version 2025011500`  
-   If no arguments are given, the scripts reference images.json for all available images.
+   If no arguments are given, the scripts reference `images.json` for all available images.
 
 7. Troubleshooting:  
    Ensure that your device is in fastboot (bootloader) mode before continuing.  
