@@ -18,20 +18,20 @@ Full GrapheneOS CLI Install Documentation: https://grapheneos.org/install/cli
    Note: Currently only one entry in `images.json` may have `"active": true` specified, otherwise you may have issues.
 
 3. Run the main install script:  
-   `./install_grapheneOS.sh`
+   `./install_grapheneOS.sh`  
    This downloads required components, prompts you to download images, and guides you through unlocking the bootloader and flashing the firmware.
 
 4. Verify checksums (optional, recommended):  
-   `./verify_images_sha256sums.sh`
+   `./verify_images_sha256sums.sh`  
    Checks integrity of downloaded image files using their `.sha256sum` files and SSH signatures.
 
 5. Generate checksums (developer use):  
-   `./gen_images_sha256sums.sh`
+   `./gen_images_sha256sums.sh`  
    Creates new `.sha256sum` files for each image if they are missing.
 
 6. General notes:  
    You may pass device and version arguments to scripts, for example:  
-   `./install_grapheneOS.sh --device_codename tangorpro --grapheneos_version 2025011500`
+   `./install_grapheneOS.sh --device_codename tangorpro --grapheneos_version 2025011500`  
    If no arguments are given, the scripts reference images.json for all available images.
 
 7. Troubleshooting:  
