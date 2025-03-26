@@ -6,6 +6,7 @@
 DEVICE_CODENAME=""
 GRAPHENEOS_VERSION=""
 STRICT_MODE=false
+any_failed=false
 
 # Function to show usage
 show_usage() {
@@ -122,6 +123,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
 
     if [ ! -f "$image_filename" ]; then
         echo "Error: $image_filename not found."
+        any_failed=true
         if [ "$STRICT_MODE" = true ]; then
             exit 1
         else
@@ -136,6 +138,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         sha256sum -c "$sha256sum_filename"
         if [ $? -ne 0 ]; then
             echo "Error: Checksum verification failed for $image_filename."
+            any_failed=true
             if [ "$STRICT_MODE" = true ]; then
                 exit 1
             else
@@ -147,6 +150,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         fi
     else
         echo "Error: $sha256sum_filename not found."
+        any_failed=true
         if [ "$STRICT_MODE" = true ]; then
             exit 1
         else
@@ -157,6 +161,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     # Proceed with signature verification even if SHA check didn't pass or file missing
     if [ ! -f "$signature_filename" ]; then
         echo "Error: $signature_filename not found."
+        any_failed=true
         if [ "$STRICT_MODE" = true ]; then
             exit 1
         else
@@ -180,6 +185,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         else
             echo "Error: Signature verification failed for $image_filename."
             echo "ssh-keygen output: $sig_output"
+            any_failed=true
             if [ "$STRICT_MODE" = true ]; then
                 exit 1
             else
@@ -199,6 +205,7 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         else
             echo "Error: Signature verification failed for $image_filename."
             echo "Signify output: $sig_output"
+            any_failed=true
             if [ "$STRICT_MODE" = true ]; then
                 exit 1
             else
@@ -210,4 +217,8 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
 done
 
 echo ""
-echo "All applicable verifications completed."
+if [ "$any_failed" = true ]; then
+    echo "Some images were missing or failed verification."
+else
+    echo "All image checksums and signatures verified successfully."
+fi
