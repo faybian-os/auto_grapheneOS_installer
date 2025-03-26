@@ -390,6 +390,7 @@ case $response in
                 echo ""
                 echo "All specified images have been flashed."
                 echo "Verified Boot Key Hashes:"
+                echo ""
                 cat boot_key_hashes.txt
                 echo ""
                 read -p "Would you like to re-lock the bootloader now? (Recommended after verifying a successful boot) [y/N] " lock_confirm
