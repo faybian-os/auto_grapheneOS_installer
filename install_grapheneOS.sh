@@ -263,6 +263,17 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     esac
 
     curl -o "$image_filename" "$releases_url_root$device_codename-install-$grapheneos_version.zip"
+
+    # Immediately verify shasum and signature
+    echo ""
+    echo "Verifying the newly downloaded image..."
+    verification_after_download=$(./verify_images_sha256sums.sh -s "$device_codename" "$grapheneos_version" 2>&1)
+    if ! echo "$verification_after_download" | grep -q "All image checksums and signatures verified successfully."; then
+        echo "Error verifying the newly downloaded image. Exiting for safety."
+        echo "$verification_after_download"
+        exit 1
+    fi
+
 done
 
 echo ""
