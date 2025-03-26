@@ -40,3 +40,15 @@ Full GrapheneOS CLI Install Documentation: https://grapheneos.org/install/cli
 
 For more details on GrapheneOS itself, visit:  
 https://grapheneos.org
+
+---
+### License
+
+Licensed under Creative Commons Zero v1.0 Universal License  
+Permissions:
+- ✔️ Commercial use
+- ✔️ Modification
+- ✔️ Distribution
+- ✔️ Private use
+
+Please see https://github.com/alfe-ai/faybian-auto_grapheneOS_installer/blob/main/LICENSE for more details.
