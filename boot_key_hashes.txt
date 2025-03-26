@@ -1,0 +1,18 @@
+Verified boot key hash
+When loading an alternate OS, the device shows a yellow notice on boot with the ID of the alternate OS based on the sha256 of the verified boot public key. 4th and 5th generation Pixels only show the first 32 bits of the hash so you can't use this approach. 6th generation Pixels onwards show the full hash and you can compare it against the official GrapheneOS verified boot key hashes below:
+
+Pixel 9 Pro Fold: af4d2c6e62be0fec54f0271b9776ff061dd8392d9f51cf6ab1551d346679e24c
+Pixel 9 Pro XL: 55d3c2323db91bb91f20d38d015e85112d038f6b6b5738fe352c1a80dba57023
+Pixel 9 Pro: f729cab861da1b83fdfab402fc9480758f2ae78ee0b61c1f2137dd1ab7076e86
+Pixel 9: 9e6a8f3e0d761a780179f93acd5721ba1ab7c8c537c7761073c0a754b0e932de
+Pixel 8a: 096b8bd6d44527a24ac1564b308839f67e78202185cbff9cfdcb10e63250bc5e
+Pixel 8 Pro: 896db2d09d84e1d6bb747002b8a114950b946e5825772a9d48ba7eb01d118c1c
+Pixel 8: cd7479653aa88208f9f03034810ef9b7b0af8a9d41e2000e458ac403a2acb233
+Pixel Fold: ee0c9dfef6f55a878538b0dbf7e78e3bc3f1a13c8c44839b095fe26dd5fe2842
+Pixel Tablet: 94df136e6c6aa08dc26580af46f36419b5f9baf46039db076f5295b91aaff230
+Pixel 7a: 508d75dea10c5cbc3e7632260fc0b59f6055a8a49dd84e693b6d8899edbb01e4
+Pixel 7 Pro: bc1c0dd95664604382bb888412026422742eb333071ea0b2d19036217d49182f
+Pixel 7: 3efe5392be3ac38afb894d13de639e521675e62571a8a9b3ef9fc8c44fd17fa1
+Pixel 6a: 08c860350a9600692d10c8512f7b8e80707757468e8fbfeea2a870c0a83d6031
+Pixel 6 Pro: 439b76524d94c40652ce1bf0d8243773c634d2f99ba3160d8d02aa5e29ff925c
+Pixel 6: f0a890375d1405e62ebfd87e8d3f475f948ef031bbf9ddd516d5f600a23677e8

@@ -1,0 +1,10 @@
+# Alfe Defaults:
+.idea/
+node_modules/
+.patchfiles_ignore/
+*.swp
+.env
+
+# auto_grapheneOS_installer Specifics:
+imgs/*.zip
+tangorpro-install-2025030200/
