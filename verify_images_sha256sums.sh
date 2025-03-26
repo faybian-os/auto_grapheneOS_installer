@@ -130,30 +130,31 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         fi
     fi
 
-    if [ ! -f "$sha256sum_filename" ]; then
+    SHA_CHECK_PASSED=false
+    if [ -f "$sha256sum_filename" ]; then
+        echo "Verifying SHA256 checksum for $image_filename..."
+        sha256sum -c "$sha256sum_filename"
+        if [ $? -ne 0 ]; then
+            echo "Error: Checksum verification failed for $image_filename."
+            if [ "$STRICT_MODE" = true ]; then
+                exit 1
+            else
+                echo "Skipping SHA256 verification. Proceeding with signature check..."
+            fi
+        else
+            echo "Checksum verification passed for $image_filename."
+            SHA_CHECK_PASSED=true
+        fi
+    else
         echo "Error: $sha256sum_filename not found."
         if [ "$STRICT_MODE" = true ]; then
             exit 1
         else
-            echo "Continuing to next image..."
-            continue
+            echo "Skipping SHA256 verification. Proceeding with signature check..."
         fi
     fi
 
-    echo "Verifying SHA256 checksum for $image_filename..."
-    sha256sum -c "$sha256sum_filename"
-    if [ $? -ne 0 ]; then
-        echo "Error: Checksum verification failed for $image_filename."
-        if [ "$STRICT_MODE" = true ]; then
-            exit 1
-        else
-            echo "Continuing to next image..."
-            continue
-        fi
-    else
-        echo "Checksum verification passed for $image_filename."
-    fi
-
+    # Proceed with signature verification even if SHA check didn't pass or file missing
     if [ ! -f "$signature_filename" ]; then
         echo "Error: $signature_filename not found."
         if [ "$STRICT_MODE" = true ]; then
