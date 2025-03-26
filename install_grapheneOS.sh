@@ -137,9 +137,9 @@ if [[ -n "$DEVICE_CODENAME" && -n "$GRAPHENEOS_VERSION" ]]; then
       echo "images.json not found in the current directory. Exiting."
       exit 1
     fi
-    image_index=$(jq ".images | map(.device_codename == \"$DEVICE_CODENAME\" and .grapheneos_version == \"$GRAPHENEOS_VERSION\") | index(true)" images.json)
+    image_index=$(jq ".images | map(.device_codename == \"$DEVICE_CODENAME\" and .grapheneos_version == \"$GRAPHENEOS_VERSION\" and .active == true) | index(true)" images.json)
     if [[ "$image_index" == "null" ]]; then
-        echo "Error: Specified device_codename and grapheneos_version not found in images.json"
+        echo "Error: Specified device_codename and grapheneos_version not found or not active in images.json"
         exit 1
     fi
 
@@ -165,8 +165,9 @@ else
             db="$(jq -r ".images[$i].device_brand" images.json)"
             dm="$(jq -r ".images[$i].device_model_name" images.json)"
             gv="$(jq -r ".images[$i].grapheneos_version" images.json)"
+            active="$(jq -r ".images[$i].active" images.json)"
 
-            if [[ "$dc" == "null" || "$gv" == "null" ]]; then
+            if [[ "$dc" == "null" || "$gv" == "null" || "$active" == "false" ]]; then
                 continue
             fi
 
@@ -225,15 +226,15 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     device_model_name="${device_model_names[$i]}"
     grapheneos_version="${grapheneos_versions[$i]}"
 
-    echo "Verifying if image exists and checksum is valid..."
-    verification_output=$(./verify_images_sha256sums.sh "$device_codename" "$grapheneos_version" 2>&1)
+    echo "Verifying if image exists and checksum is valid for '$device_codename' '$grapheneos_version'..."
+    verification_output=$(./verify_images_sha256sums.sh -s "$device_codename" "$grapheneos_version" 2>&1)
     if echo "$verification_output" | grep -q "All image checksums and signatures verified successfully."; then
         echo "$verification_output"
         echo "Image for $device_codename $grapheneos_version is verified. Skipping download."
         continue
     else
         echo "$verification_output"
-        echo "Image missing or verification failed. Proceeding to download."
+        echo "Image missing or verification failed for '$device_codename' '$grapheneos_version'. Proceeding to download."
     fi
 
     echo ""
@@ -262,6 +263,17 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     esac
 
     curl -o "$image_filename" "$releases_url_root$device_codename-install-$grapheneos_version.zip"
+
+    # Immediately verify shasum and signature
+    echo ""
+    echo "Verifying the newly downloaded image..."
+    verification_after_download=$(./verify_images_sha256sums.sh -s "$device_codename" "$grapheneos_version" 2>&1)
+    if ! echo "$verification_after_download" | grep -q "All image checksums and signatures verified successfully."; then
+        echo "Error verifying the newly downloaded image. Exiting for safety."
+        echo "$verification_after_download"
+        exit 1
+    fi
+
 done
 
 echo ""
@@ -390,6 +402,7 @@ case $response in
                 echo ""
                 echo "All specified images have been flashed."
                 echo "Verified Boot Key Hashes:"
+                echo ""
                 cat boot_key_hashes.txt
                 echo ""
                 read -p "Would you like to re-lock the bootloader now? (Recommended after verifying a successful boot) [y/N] " lock_confirm
@@ -416,4 +429,3 @@ case $response in
         exit 1
         ;;
 esac
-

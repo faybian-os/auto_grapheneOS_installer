@@ -23,6 +23,11 @@ echo "Found $images_count images in images.json."
 
 # New loop to list the images
 for ((i=0; i<images_count; i++)); do
+    active="$(jq -r ".images[$i].active" images.json)"
+    if [ "$active" == "false" ]; then
+        continue
+    fi
+
     filename=$(jq -r ".images[$i].filename" images.json)
     if [ "$filename" != "null" ] && [ -n "$filename" ]; then
         echo "$filename"
@@ -35,6 +40,11 @@ done
 
 # Existing loop to generate SHA256 sums
 for ((i=0; i<images_count; i++)); do
+    active="$(jq -r ".images[$i].active" images.json)"
+    if [ "$active" == "false" ]; then
+        continue
+    fi
+
     filename=$(jq -r ".images[$i].filename" images.json)
 
     if [ "$filename" != "null" ] && [ -n "$filename" ]; then
@@ -64,4 +74,3 @@ for ((i=0; i<images_count; i++)); do
     sha256sum "$image_filename" > "$sha256sum_filename"
     echo "Generated $sha256sum_filename."
 done
-

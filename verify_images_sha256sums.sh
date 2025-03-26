@@ -5,11 +5,15 @@
 # Initialize variables
 DEVICE_CODENAME=""
 GRAPHENEOS_VERSION=""
+STRICT_MODE=false
+any_failed=false
 
 # Function to show usage
 show_usage() {
     echo "Usage: $0 [--device_codename DEVICE_CODENAME --grapheneos_version GRAPHENEOS_VERSION]"
     echo "       $0 [DEVICE_CODENAME GRAPHENEOS_VERSION]"
+    echo "       Optional flags:"
+    echo "         --exit_on_failure, --strict, -s    Preserve old strict exit behavior"
     echo "If no arguments are provided, all images in images.json will be processed."
     exit 0
 }
@@ -24,6 +28,9 @@ while [[ "$#" -gt 0 ]]; do
         --grapheneos_version)
             GRAPHENEOS_VERSION="$2"
             shift
+            ;;
+        --exit_on_failure|--strict|-s)
+            STRICT_MODE=true
             ;;
         --help|-h)
             show_usage
@@ -70,13 +77,13 @@ elif [[ -z "$DEVICE_CODENAME" && -z "$GRAPHENEOS_VERSION" ]]; then
     images_count=$(jq '.images | length' images.json)
     echo "Found $images_count images in images.json."
 
-    # Read images into arrays, skipping entries with null device_codename or version
+    # Read images into arrays, skipping entries with null device_codename or version, or inactive
     for ((i=0; i<images_count; i++)); do
         dc="$(jq -r ".images[$i].device_codename" images.json)"
         gv="$(jq -r ".images[$i].grapheneos_version" images.json)"
+        active="$(jq -r ".images[$i].active" images.json)"
 
-        # Skip if device_codename or grapheneos_version is "null"
-        if [[ "$dc" == "null" || "$gv" == "null" ]]; then
+        if [[ "$dc" == "null" || "$gv" == "null" || "$active" == "false" ]]; then
             continue
         fi
 
@@ -115,27 +122,52 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
     echo "Processing $image_filename..."
 
     if [ ! -f "$image_filename" ]; then
-        echo "Error: $image_filename not found. Exiting."
-        exit 1
+        echo "Error: $image_filename not found."
+        any_failed=true
+        if [ "$STRICT_MODE" = true ]; then
+            exit 1
+        else
+            echo "Continuing to next image..."
+            continue
+        fi
     fi
 
-    if [ ! -f "$sha256sum_filename" ]; then
-        echo "Error: $sha256sum_filename not found. Exiting."
-        exit 1
-    fi
-
-    echo "Verifying SHA256 checksum for $image_filename..."
-    sha256sum -c "$sha256sum_filename"
-    if [ $? -ne 0 ]; then
-        echo "Error: Checksum verification failed for $image_filename."
-        exit 1
+    SHA_CHECK_PASSED=false
+    if [ -f "$sha256sum_filename" ]; then
+        echo "Verifying SHA256 checksum for $image_filename..."
+        sha256sum -c "$sha256sum_filename"
+        if [ $? -ne 0 ]; then
+            echo "Error: Checksum verification failed for $image_filename."
+            any_failed=true
+            if [ "$STRICT_MODE" = true ]; then
+                exit 1
+            else
+                echo "Skipping SHA256 verification. Proceeding with signature check..."
+            fi
+        else
+            echo "Checksum verification passed for $image_filename."
+            SHA_CHECK_PASSED=true
+        fi
     else
-        echo "Checksum verification passed for $image_filename."
+        echo "Error: $sha256sum_filename not found."
+        any_failed=true
+        if [ "$STRICT_MODE" = true ]; then
+            exit 1
+        else
+            echo "Skipping SHA256 verification. Proceeding with signature check..."
+        fi
     fi
 
+    # Proceed with signature verification even if SHA check didn't pass or file missing
     if [ ! -f "$signature_filename" ]; then
-        echo "Error: $signature_filename not found. Exiting."
-        exit 1
+        echo "Error: $signature_filename not found."
+        any_failed=true
+        if [ "$STRICT_MODE" = true ]; then
+            exit 1
+        else
+            echo "Continuing to next image..."
+            continue
+        fi
     fi
 
     echo "Verifying signature using $signature_filename for $image_filename..."
@@ -153,7 +185,13 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         else
             echo "Error: Signature verification failed for $image_filename."
             echo "ssh-keygen output: $sig_output"
-            exit 1
+            any_failed=true
+            if [ "$STRICT_MODE" = true ]; then
+                exit 1
+            else
+                echo "Continuing to next image..."
+                continue
+            fi
         fi
     else
         # Use signify-openbsd for signify format
@@ -167,10 +205,20 @@ for ((i=0; i<${#device_codenames[@]}; i++)); do
         else
             echo "Error: Signature verification failed for $image_filename."
             echo "Signify output: $sig_output"
-            exit 1
+            any_failed=true
+            if [ "$STRICT_MODE" = true ]; then
+                exit 1
+            else
+                echo "Continuing to next image..."
+                continue
+            fi
         fi
     fi
 done
 
 echo ""
-echo "All image checksums and signatures verified successfully."
+if [ "$any_failed" = true ]; then
+    echo "Some images were missing or failed verification."
+else
+    echo "All image checksums and signatures verified successfully."
+fi
