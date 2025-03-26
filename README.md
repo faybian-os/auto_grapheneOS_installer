@@ -12,6 +12,8 @@ Full GrapheneOS CLI Install Documentation: https://grapheneos.org/install/cli
    git clone git@github.com:alfe-ai/faybian-auto_grapheneOS_installer.git
    cd faybian-auto_grapheneOS_installer
    ```
+   
+2. Edit the `images.json` file to have your `device_codename` and `grapheneos_version` specified, in an entry with `"active": true`.
 
 3. Run the main install script:  
    `./install_grapheneOS.sh`
