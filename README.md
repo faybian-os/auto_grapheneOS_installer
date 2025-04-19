@@ -1,4 +1,4 @@
-# Faybian / Auto GrapheneOS Installer
+# Auto GrapheneOS Installer
 
 A set of scripts to automate installation of GrapheneOS to hardware devices.
 
